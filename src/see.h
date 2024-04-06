@@ -31,10 +31,10 @@ namespace stormphranj::see
 	namespace values
 	{
 		constexpr Score Pawn = 100;
-		constexpr Score Alfil = 450;
-		constexpr Score Ferz = 1250;
-		constexpr Score Knight = 450;
-		constexpr Score Rook = 650;
+		constexpr Score Alfil = 125;
+		constexpr Score Ferz = 160;
+		constexpr Score Knight = 330;
+		constexpr Score Rook = 500;
 		constexpr Score King = 0;
 	}
 

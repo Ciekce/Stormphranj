@@ -77,7 +77,7 @@ ifneq (, $(findstring clang,$(COMPILER_VERSION)))
     PGO_MERGE := llvm-profdata merge -output=sp.profdata *.profraw
     PGO_USE := -fprofile-instr-use=sp.profdata
 else
-    $(warning GCC currently produces very slow binaries for Stormphrax)
+    $(warning GCC currently produces very slow binaries for Stormphranj)
     PGO_GENERATE := -DSPJ_PGO_PROFILE -fprofile-generate
     PGO_MERGE :=
     PGO_USE := -fprofile-use

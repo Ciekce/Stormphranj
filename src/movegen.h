@@ -204,9 +204,9 @@ namespace stormphranj
 	private:
 		static constexpr auto Mvv = std::array {
 			10,  // pawn
-			40,  // alfil
-			110, // ferz
-			38,  // knight
+			12,  // alfil
+			16, // ferz
+			33,  // knight
 			50   // rook
 		};
 
