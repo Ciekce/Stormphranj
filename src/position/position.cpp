@@ -458,8 +458,6 @@ namespace stormphranj
 		if (srcPiece == Piece::None || pieceColor(srcPiece) != us)
 			return false;
 
-		const auto type = move.type();
-
 		const auto dst = move.dst();
 		const auto dstPiece = state.boards.pieceAt(dst);
 
@@ -498,7 +496,7 @@ namespace stormphranj
 			const auto promoRank = relativeRank(us, 7);
 
 			// non-promotion move to back rank, or promotion move to any other rank
-			if ((type == MoveType::Promotion) != (dstRank == promoRank))
+			if (move.isPromo() != (dstRank == promoRank))
 				return false;
 
 			// sideways move
@@ -517,7 +515,7 @@ namespace stormphranj
 		}
 		else
 		{
-			if (type == MoveType::Promotion)
+			if (move.isPromo())
 				return false;
 
 			Bitboard attacks{};

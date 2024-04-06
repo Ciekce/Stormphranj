@@ -325,7 +325,7 @@ namespace stormphranj
 			if (captured != Piece::None)
 				move.score += Mvv[static_cast<i32>(pieceType(captured))];
 
-			if ((captured != Piece::None || move.move.type() == MoveType::Promotion)
+			if ((captured != Piece::None || move.move.isPromo())
 				&& see::see(m_pos, move.move))
 				move.score += GoodNoisyBonus;
 		}

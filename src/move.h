@@ -54,8 +54,9 @@ namespace stormphranj
 		[[nodiscard]] constexpr auto dstFile() const { return (m_move >> 4) & 0x7; }
 
 		[[nodiscard]] constexpr auto type() const { return static_cast<MoveType>(m_move & 0x3); }
+		[[nodiscard]] constexpr auto isPromo() const { return type() == MoveType::Promotion; }
 
-		[[nodiscard]] constexpr auto isNull() const { return /*src() == dst()*/ m_move == 0; }
+		[[nodiscard]] constexpr auto isNull() const { return m_move == 0; }
 
 		[[nodiscard]] constexpr auto data() const { return m_move; }
 

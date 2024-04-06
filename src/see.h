@@ -66,11 +66,9 @@ namespace stormphranj::see
 
 	inline auto gain(const PositionBoards &boards, Move move)
 	{
-		const auto type = move.type();
-
 		auto score = value(boards.pieceAt(move.dst()));
 
-		if (type == MoveType::Promotion)
+		if (move.isPromo())
 			score += values::Ferz - values::Pawn;
 
 		return score;
@@ -107,7 +105,7 @@ namespace stormphranj::see
 		if (score < 0)
 			return false;
 
-		auto next = move.type() == MoveType::Promotion
+		auto next = move.isPromo()
 			? PieceType::Ferz
 			: pieceType(boards.pieceAt(move.src()));
 

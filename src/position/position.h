@@ -404,8 +404,6 @@ namespace stormphranj
 		[[nodiscard]] inline auto captureTarget(Move move) const
 		{
 			assert(move != NullMove);
-
-			const auto type = move.type();
 			return boards().pieceAt(move.dst());
 		}
 
@@ -413,7 +411,7 @@ namespace stormphranj
 		{
 			assert(move != NullMove);
 
-			return move.type() == MoveType::Promotion
+			return move.isPromo()
 				|| boards().pieceAt(move.dst()) != Piece::None;
 		}
 
@@ -421,10 +419,8 @@ namespace stormphranj
 		{
 			assert(move != NullMove);
 
-			const auto type = move.type();
-
 			const auto captured = boards().pieceAt(move.dst());
-			return {captured != Piece::None || move.type() == MoveType::Promotion, captured};
+			return {captured != Piece::None || move.isPromo(), captured};
 		}
 
 		[[nodiscard]] auto toFen() const -> std::string;
