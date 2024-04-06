@@ -30,7 +30,6 @@ namespace stormphranj
 
 		struct GlobalOptions
 		{
-			bool chess960{false};
 			bool showWdl{true};
 
 			i32 contempt{wdl::unnormalizeScoreMove32(DefaultNormalizedContempt)};

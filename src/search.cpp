@@ -706,7 +706,7 @@ namespace stormphranj::search
 
 			const auto guard = pos.applyMove(move, &thread.nnueState);
 
-			thread.prevMoves[ply] = {movingPiece, move.src(), move.historyDst()};
+			thread.prevMoves[ply] = {movingPiece, move.src(), move.dst()};
 
 			Score score{};
 

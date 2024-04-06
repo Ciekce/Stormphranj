@@ -53,44 +53,33 @@ auto main(i32 argc, const char *argv[]) -> i32
 			const auto printUsage = [&]()
 			{
 				std::cerr << "usage: " << argv[0]
-					<< " datagen <marlinformat/viri_binpack> <standard/dfrc> <path> [threads] [game limit per thread]"
+					<< " datagen <marlinformat/viri_binpack> <path> [threads] [game limit per thread]"
 					<< std::endl;
 			};
 
-			if (argc < 5)
+			if (argc < 4)
 			{
-				printUsage();
-				return 1;
-			}
-
-			bool dfrc = false;
-
-			if (std::string{argv[3]} == "dfrc")
-				dfrc = true;
-			else if (std::string{argv[3]} != "standard")
-			{
-				std::cerr << "invalid variant " << argv[3] << std::endl;
 				printUsage();
 				return 1;
 			}
 
 			u32 threads = 1;
-			if (argc > 5 && !util::tryParseU32(threads, argv[5]))
+			if (argc > 4 && !util::tryParseU32(threads, argv[4]))
 			{
-				std::cerr << "invalid number of threads " << argv[5] << std::endl;
+				std::cerr << "invalid number of threads " << argv[4] << std::endl;
 				printUsage();
 				return 1;
 			}
 
 			auto games = datagen::UnlimitedGames;
-			if (argc > 6 && !util::tryParseU32(games, argv[6]))
+			if (argc > 5 && !util::tryParseU32(games, argv[5]))
 			{
-				std::cerr << "invalid number of games " << argv[6] << std::endl;
+				std::cerr << "invalid number of games " << argv[5] << std::endl;
 				printUsage();
 				return 1;
 			}
 
-			return datagen::run(printUsage, argv[2], dfrc, argv[4], static_cast<i32>(threads), games);
+			return datagen::run(printUsage, argv[2], argv[3], static_cast<i32>(threads), games);
 		}
 #if SPJ_EXTERNAL_TUNE
 		else if (mode == "printwf"

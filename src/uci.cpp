@@ -190,8 +190,6 @@ namespace stormphranj
 				<< " min " << search::ThreadCountRange.min() << " max " << search::ThreadCountRange.max() << '\n';
 			std::cout << "option name Contempt type spin default " << opts::DefaultNormalizedContempt
 				<< " min " << ContemptRange.min() << " max " << ContemptRange.max() << '\n';
-			std::cout << "option name UCI_Chess960 type check default "
-				<< (defaultOpts.chess960 ? "true" : "false") << '\n';
 			std::cout << "option name UCI_ShowWDL type check default "
 				<< (defaultOpts.showWdl ? "true" : "false") << '\n';
 			std::cout << "option name Move Overhead type spin default " << limit::DefaultMoveOverhead
@@ -244,36 +242,6 @@ namespace stormphranj
 
 					if (!m_pos.resetFromFen(fen.str()))
 						return;
-				}
-				else if (position == "frc")
-				{
-					if (!g_opts.chess960)
-					{
-						std::cerr << "Chess960 not enabled" << std::endl;
-						return;
-					}
-
-					if (next < tokens.size())
-					{
-						if (const auto frcIndex = util::tryParseU32(tokens[next++]);
-							frcIndex && !m_pos.resetFromFrcIndex(*frcIndex))
-							return;
-					}
-				}
-				else if (position == "dfrc")
-				{
-					if (!g_opts.chess960)
-					{
-						std::cerr << "Chess960 not enabled" << std::endl;
-						return;
-					}
-
-					if (next < tokens.size())
-					{
-						if (const auto dfrcIndex = util::tryParseU32(tokens[next++]);
-							dfrcIndex && !m_pos.resetFromDfrcIndex(*dfrcIndex))
-							return;
-					}
 				}
 				else return;
 
@@ -523,14 +491,6 @@ namespace stormphranj
 						if (const auto newContempt = util::tryParseI32(valueStr))
 							opts::mutableOpts().contempt = wdl::unnormalizeScoreMove32(
 								ContemptRange.clamp(*newContempt));
-					}
-				}
-				else if (nameStr == "uci_chess960")
-				{
-					if (!valueEmpty)
-					{
-						if (const auto newChess960 = util::tryParseBool(valueStr))
-							opts::mutableOpts().chess960 = *newChess960;
 					}
 				}
 				else if (nameStr == "uci_showwdl")
@@ -793,19 +753,9 @@ namespace stormphranj
 
 			const auto type = move.type();
 
-			if (type != MoveType::Castling || g_opts.chess960)
-			{
-				str << squareToString(move.dst());
-				if (type == MoveType::Promotion)
-					str << pieceTypeToChar(move.promo());
-			}
-			else
-			{
-				const auto dst = move.srcFile() < move.dstFile()
-					? toSquare(move.srcRank(), 6)
-					: toSquare(move.srcRank(), 2);
-				str << squareToString(dst);
-			}
+			str << squareToString(move.dst());
+			if (type == MoveType::Promotion)
+				str << pieceTypeToChar(move.promo());
 
 			return str.str();
 		}

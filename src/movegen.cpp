@@ -203,19 +203,6 @@ namespace stormphranj
 			precalculated<PieceType::Knight, attacks::KnightAttacks>(dst, pos, dstMask);
 		}
 
-		inline auto generateFrcCastling(ScoredMoveList &dst, const Position &pos, Bitboard occupancy,
-			Square king, Square kingDst, Square rook, Square rookDst)
-		{
-			const auto toKingDst = rayBetween(king, kingDst);
-			const auto toRook = rayBetween(king, rook);
-
-			const auto occ = occupancy ^ squareBit(king) ^ squareBit(rook);
-
-			if ((occ & (toKingDst | toRook | squareBit(kingDst) | squareBit(rookDst))).empty()
-				&& !pos.anyAttacked(toKingDst | squareBit(kingDst), pos.opponent()))
-				pushCastling(dst, king, rook);
-		}
-
 		template <bool Castling>
 		auto generateKings(ScoredMoveList &dst, const Position &pos, Bitboard dstMask)
 		{
@@ -228,58 +215,29 @@ namespace stormphranj
 					const auto &castlingRooks = pos.castlingRooks();
 					const auto occupancy = pos.bbs().occupancy();
 
-					// this branch is cheaper than the extra checks the chess960 castling movegen does
-					if (g_opts.chess960)
+					if (pos.toMove() == Color::Black)
 					{
-						if (pos.toMove() == Color::Black)
-						{
-							if (castlingRooks.black().kingside != Square::None)
-								generateFrcCastling(dst, pos, occupancy,
-									pos.blackKing(), Square::G8,
-									castlingRooks.black().kingside, Square::F8);
-							if (castlingRooks.black().queenside != Square::None)
-								generateFrcCastling(dst, pos, occupancy,
-									pos.blackKing(), Square::C8,
-									castlingRooks.black().queenside, Square::D8);
-						}
-						else
-						{
-							if (castlingRooks.white().kingside != Square::None)
-								generateFrcCastling(dst, pos, occupancy,
-									pos.whiteKing(), Square::G1,
-									castlingRooks.white().kingside, Square::F1);
-							if (castlingRooks.white().queenside != Square::None)
-								generateFrcCastling(dst, pos, occupancy,
-									pos.whiteKing(), Square::C1,
-									castlingRooks.white().queenside, Square::D1);
-						}
+						if (castlingRooks.black().kingside != Square::None
+							&& (occupancy & U64(0x6000000000000000)).empty()
+							&& !pos.isAttacked(Square::F8, Color::White))
+							pushCastling(dst, pos.blackKing(), Square::H8);
+
+						if (castlingRooks.black().queenside != Square::None
+							&& (occupancy & U64(0x0E00000000000000)).empty()
+							&& !pos.isAttacked(Square::D8, Color::White))
+							pushCastling(dst, pos.blackKing(), Square::A8);
 					}
 					else
 					{
-						if (pos.toMove() == Color::Black)
-						{
-							if (castlingRooks.black().kingside != Square::None
-								&& (occupancy & U64(0x6000000000000000)).empty()
-								&& !pos.isAttacked(Square::F8, Color::White))
-								pushCastling(dst, pos.blackKing(), Square::H8);
+						if (castlingRooks.white().kingside != Square::None
+							&& (occupancy & U64(0x0000000000000060)).empty()
+							&& !pos.isAttacked(Square::F1, Color::Black))
+							pushCastling(dst, pos.whiteKing(), Square::H1);
 
-							if (castlingRooks.black().queenside != Square::None
-								&& (occupancy & U64(0x0E00000000000000)).empty()
-								&& !pos.isAttacked(Square::D8, Color::White))
-								pushCastling(dst, pos.blackKing(), Square::A8);
-						}
-						else
-						{
-							if (castlingRooks.white().kingside != Square::None
-								&& (occupancy & U64(0x0000000000000060)).empty()
-								&& !pos.isAttacked(Square::F1, Color::Black))
-								pushCastling(dst, pos.whiteKing(), Square::H1);
-
-							if (castlingRooks.white().queenside != Square::None
-								&& (occupancy & U64(0x000000000000000E)).empty()
-								&& !pos.isAttacked(Square::D1, Color::Black))
-								pushCastling(dst, pos.whiteKing(), Square::A1);
-						}
+						if (castlingRooks.white().queenside != Square::None
+							&& (occupancy & U64(0x000000000000000E)).empty()
+							&& !pos.isAttacked(Square::D1, Color::Black))
+							pushCastling(dst, pos.whiteKing(), Square::A1);
 					}
 				}
 			}

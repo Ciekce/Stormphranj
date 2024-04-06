@@ -67,7 +67,7 @@ namespace stormphranj
 
 		[[nodiscard]] static inline auto from(const PositionBoards &boards, Move move)
 		{
-			return HistoryMove{boards.pieceAt(move.src()), move.src(), move.historyDst()};
+			return HistoryMove{boards.pieceAt(move.src()), move.src(), move.dst()};
 		}
 
 		[[nodiscard]] static inline auto from(const Position &pos, Move move)

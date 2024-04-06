@@ -43,81 +43,6 @@ namespace stormphranj
 #ifndef NDEBUG
 		constexpr bool VerifyAll = true;
 #endif
-
-		auto scharnaglToBackrank(u32 n)
-		{
-			// https://en.wikipedia.org/wiki/Fischer_random_chess_numbering_scheme#Direct_derivation
-
-			// these are stored with the second knight moved left by an empty square,
-			// because the first knight fills a square before the second knight is placed
-			static constexpr auto N5n = std::array{
-				std::pair{0, 0},
-				std::pair{0, 1},
-				std::pair{0, 2},
-				std::pair{0, 3},
-				std::pair{1, 1},
-				std::pair{1, 2},
-				std::pair{1, 3},
-				std::pair{2, 2},
-				std::pair{2, 3},
-				std::pair{3, 3}
-			};
-
-			assert(n < 960);
-
-			std::array<PieceType, 8> dst{};
-			// no need to fill with empty pieces, because pawns are impossible
-
-			const auto placeInNthFree = [&dst](u32 n, PieceType piece)
-			{
-				for (i32 free = 0, i = 0; i < 8; ++i)
-				{
-					if (dst[i] == PieceType::Pawn
-						&& free++ == n)
-					{
-						dst[i] = piece;
-						break;
-					}
-				}
-			};
-
-			const auto placeInFirstFree = [&dst](PieceType piece)
-			{
-				for (i32 i = 0; i < 8; ++i)
-				{
-					if (dst[i] == PieceType::Pawn)
-					{
-						dst[i] = piece;
-						break;
-					}
-				}
-			};
-
-			const auto n2 = n  / 4;
-			const auto b1 = n  % 4;
-
-			const auto n3 = n2 / 4;
-			const auto b2 = n2 % 4;
-
-			const auto n4 = n3 / 6;
-			const auto  q = n3 % 6;
-
-			dst[b1 * 2 + 1] = PieceType::Bishop;
-			dst[b2 * 2    ] = PieceType::Bishop;
-
-			placeInNthFree(q, PieceType::Queen);
-
-			const auto [knight1, knight2] = N5n[n4];
-
-			placeInNthFree(knight1, PieceType::Knight);
-			placeInNthFree(knight2, PieceType::Knight);
-
-			placeInFirstFree(PieceType::Rook);
-			placeInFirstFree(PieceType::King);
-			placeInFirstFree(PieceType::Rook);
-
-			return dst;
-		}
 	}
 
 	template auto Position::applyMoveUnchecked<false, false>(Move, eval::NnueState *) -> void;
@@ -362,121 +287,17 @@ namespace stormphranj
 
 		if (castlingFlags.length() != 1 || castlingFlags[0] != '-')
 		{
-			if (g_opts.chess960)
+			for (char flag : castlingFlags)
 			{
-				for (i32 rank = 0; rank < 8; ++rank)
+				switch (flag)
 				{
-					for (i32 file = 0; file < 8; ++file)
-					{
-						const auto square = toSquare(rank, file);
-
-						const auto piece = newState.boards.pieceAt(square);
-						if (piece != Piece::None && pieceType(piece) == PieceType::King)
-							newState.king(pieceColor(piece)) = square;
-					}
-				}
-
-				for (char flag : castlingFlags)
-				{
-					if (flag >= 'a' && flag <= 'h')
-					{
-						const auto file = static_cast<i32>(flag - 'a');
-						const auto kingFile = squareFile(newState.blackKing());
-
-						if (file == kingFile)
-						{
-							std::cerr << "invalid castling availability in fen " << fen << std::endl;
-							return false;
-						}
-
-						if (file < kingFile)
-							newState.castlingRooks.black().queenside = toSquare(7, file);
-						else newState.castlingRooks.black().kingside = toSquare(7, file);
-					}
-					else if (flag >= 'A' && flag <= 'H')
-					{
-						const auto file = static_cast<i32>(flag - 'A');
-						const auto kingFile = squareFile(newState.whiteKing());
-
-						if (file == kingFile)
-						{
-							std::cerr << "invalid castling availability in fen " << fen << std::endl;
-							return false;
-						}
-
-						if (file < kingFile)
-							newState.castlingRooks.white().queenside = toSquare(0, file);
-						else newState.castlingRooks.white().kingside = toSquare(0, file);
-					}
-					else if (flag == 'k')
-					{
-						for (i32 file = squareFile(newState.blackKing()) + 1; file < 8; ++file)
-						{
-							const auto square = toSquare(7, file);
-							if (newState.boards.pieceAt(square) == Piece::BlackRook)
-							{
-								newState.castlingRooks.black().kingside = square;
-								break;
-							}
-						}
-					}
-					else if (flag == 'K')
-					{
-						for (i32 file = squareFile(newState.whiteKing()) + 1; file < 8; ++file)
-						{
-							const auto square = toSquare(0, file);
-							if (newState.boards.pieceAt(square) == Piece::WhiteRook)
-							{
-								newState.castlingRooks.white().kingside = square;
-								break;
-							}
-						}
-					}
-					else if (flag == 'q')
-					{
-						for (i32 file = squareFile(newState.blackKing()) - 1; file >= 0; --file)
-						{
-							const auto square = toSquare(7, file);
-							if (newState.boards.pieceAt(square) == Piece::BlackRook)
-							{
-								newState.castlingRooks.black().queenside = square;
-								break;
-							}
-						}
-					}
-					else if (flag == 'Q')
-					{
-						for (i32 file = squareFile(newState.whiteKing()) - 1; file >= 0; --file)
-						{
-							const auto square = toSquare(0, file);
-							if (newState.boards.pieceAt(square) == Piece::WhiteRook)
-							{
-								newState.castlingRooks.white().queenside = square;
-								break;
-							}
-						}
-					}
-					else
-					{
-						std::cerr << "invalid castling availability in fen " << fen << std::endl;
-						return false;
-					}
-				}
-			}
-			else
-			{
-				for (char flag : castlingFlags)
-				{
-					switch (flag)
-					{
-					case 'k': newState.castlingRooks.black().kingside  = Square::H8; break;
-					case 'q': newState.castlingRooks.black().queenside = Square::A8; break;
-					case 'K': newState.castlingRooks.white().kingside  = Square::H1; break;
-					case 'Q': newState.castlingRooks.white().queenside = Square::A1; break;
-					default:
-						std::cerr << "invalid castling availability in fen " << fen << std::endl;
-						return false;
-					}
+				case 'k': newState.castlingRooks.black().kingside  = Square::H8; break;
+				case 'q': newState.castlingRooks.black().queenside = Square::A8; break;
+				case 'K': newState.castlingRooks.white().kingside  = Square::H1; break;
+				case 'Q': newState.castlingRooks.white().queenside = Square::A1; break;
+				default:
+					std::cerr << "invalid castling availability in fen " << fen << std::endl;
+					return false;
 				}
 			}
 		}
@@ -521,130 +342,6 @@ namespace stormphranj
 		m_fullmove = newFullmove;
 
 		currState() = newState;
-
-		regen();
-
-		return true;
-	}
-
-	auto Position::resetFromFrcIndex(u32 n) -> bool
-	{
-		assert(g_opts.chess960);
-
-		if (n >= 960)
-		{
-			std::cerr << "invalid frc position index " << n << std::endl;
-			return false;
-		}
-
-		m_states.resize(1);
-		m_keys.clear();
-
-		auto &state = currState();
-		state = BoardState{};
-
-		auto &bbs = state.boards.bbs();
-
-		bbs.forPiece(PieceType::Pawn) = U64(0x00FF00000000FF00);
-
-		bbs.forColor(Color::Black) = U64(0x00FF000000000000);
-		bbs.forColor(Color::White) = U64(0x000000000000FF00);
-
-		const auto backrank = scharnaglToBackrank(n);
-
-		bool firstRook = true;
-
-		for (i32 i = 0; i < 8; ++i)
-		{
-			const auto blackSquare = toSquare(7, i);
-			const auto whiteSquare = toSquare(0, i);
-
-			state.boards.setPiece(blackSquare, colorPiece(backrank[i], Color::Black));
-			state.boards.setPiece(whiteSquare, colorPiece(backrank[i], Color::White));
-
-			if (backrank[i] == PieceType::Rook)
-			{
-				if (firstRook)
-				{
-					state.castlingRooks.black().queenside = blackSquare;
-					state.castlingRooks.white().queenside = whiteSquare;
-				}
-				else
-				{
-					state.castlingRooks.black().kingside  = blackSquare;
-					state.castlingRooks.white().kingside  = whiteSquare;
-				}
-
-				firstRook = false;
-			}
-		}
-
-		m_blackToMove = false;
-		m_fullmove = 1;
-
-		regen();
-
-		return true;
-	}
-
-	auto Position::resetFromDfrcIndex(u32 n) -> bool
-	{
-		assert(g_opts.chess960);
-
-		if (n >= 960 * 960)
-		{
-			std::cerr << "invalid dfrc position index " << n << std::endl;
-			return false;
-		}
-
-		m_states.resize(1);
-		m_keys.clear();
-
-		auto &state = currState();
-		state = BoardState{};
-
-		auto &bbs = state.boards.bbs();
-
-		bbs.forPiece(PieceType::Pawn) = U64(0x00FF00000000FF00);
-
-		bbs.forColor(Color::Black) = U64(0x00FF000000000000);
-		bbs.forColor(Color::White) = U64(0x000000000000FF00);
-
-		const auto blackBackrank = scharnaglToBackrank(n / 960);
-		const auto whiteBackrank = scharnaglToBackrank(n % 960);
-
-		bool firstBlackRook = true;
-		bool firstWhiteRook = true;
-
-		for (i32 i = 0; i < 8; ++i)
-		{
-			const auto blackSquare = toSquare(7, i);
-			const auto whiteSquare = toSquare(0, i);
-
-			state.boards.setPiece(blackSquare, colorPiece(blackBackrank[i], Color::Black));
-			state.boards.setPiece(whiteSquare, colorPiece(whiteBackrank[i], Color::White));
-
-			if (blackBackrank[i] == PieceType::Rook)
-			{
-				if (firstBlackRook)
-					state.castlingRooks.black().queenside = blackSquare;
-				else state.castlingRooks.black().kingside = blackSquare;
-
-				firstBlackRook = false;
-			}
-
-			if (whiteBackrank[i] == PieceType::Rook)
-			{
-				if (firstWhiteRook)
-					state.castlingRooks.white().queenside = whiteSquare;
-				else state.castlingRooks.white().kingside = whiteSquare;
-
-				firstWhiteRook = false;
-			}
-		}
-
-		m_blackToMove = false;
-		m_fullmove = 1;
 
 		regen();
 
@@ -914,30 +611,17 @@ namespace stormphranj
 			}
 
 			// same checks as for movegen
-			if (g_opts.chess960)
-			{
-				const auto toKingDst = rayBetween(src, kingDst);
-				const auto toRook = rayBetween(src, dst);
-
-				const auto castleOcc = occ ^ squareBit(src) ^ squareBit(dst);
-
-				return (castleOcc & (toKingDst | toRook | squareBit(kingDst) | squareBit(rookDst))).empty()
-					&& !anyAttacked(toKingDst | squareBit(kingDst), them);
-			}
-			else
-			{
-				if (dst == state.castlingRooks.black().kingside)
-					return (occ & U64(0x6000000000000000)).empty()
-						&& !isAttacked(Square::F8, Color::White);
-				else if (dst == state.castlingRooks.black().queenside)
-					return (occ & U64(0x0E00000000000000)).empty()
-						&& !isAttacked(Square::D8, Color::White);
-				else if (dst == state.castlingRooks.white().kingside)
-					return (occ & U64(0x0000000000000060)).empty()
-						&& !isAttacked(Square::F1, Color::Black);
-				else return (occ & U64(0x000000000000000E)).empty()
-						&& !isAttacked(Square::D1, Color::Black);
-			}
+			if (dst == state.castlingRooks.black().kingside)
+				return (occ & U64(0x6000000000000000)).empty()
+					&& !isAttacked(Square::F8, Color::White);
+			else if (dst == state.castlingRooks.black().queenside)
+				return (occ & U64(0x0E00000000000000)).empty()
+					&& !isAttacked(Square::D8, Color::White);
+			else if (dst == state.castlingRooks.white().kingside)
+				return (occ & U64(0x0000000000000060)).empty()
+					&& !isAttacked(Square::F1, Color::Black);
+			else return (occ & U64(0x000000000000000E)).empty()
+					&& !isAttacked(Square::D1, Color::Black);
 		}
 
 		if (srcPieceType == PieceType::Pawn)
@@ -1027,7 +711,7 @@ namespace stormphranj
 		if (move.type() == MoveType::Castling)
 		{
 			const auto kingDst = toSquare(move.srcRank(), move.srcFile() < move.dstFile() ? 6 : 2);
-			return !state.threats[kingDst] && !(g_opts.chess960 && state.pinned[dst]);
+			return !state.threats[kingDst];
 		}
 		else if (move.type() == MoveType::EnPassant)
 		{
@@ -1160,20 +844,6 @@ namespace stormphranj
 
 		if (state.castlingRooks == CastlingRooks{})
 			fen << '-';
-		else if (g_opts.chess960)
-		{
-			constexpr auto BlackFiles = std::array{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-			constexpr auto WhiteFiles = std::array{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
-
-			if (state.castlingRooks.white().kingside != Square::None)
-				fen << WhiteFiles[squareFile(state.castlingRooks.white().kingside)];
-			if (state.castlingRooks.white().queenside != Square::None)
-				fen << WhiteFiles[squareFile(state.castlingRooks.white().queenside)];
-			if (state.castlingRooks.black().kingside != Square::None)
-				fen << BlackFiles[squareFile(state.castlingRooks.black().kingside)];
-			if (state.castlingRooks.black().queenside != Square::None)
-				fen << BlackFiles[squareFile(state.castlingRooks.black().queenside)];
-		}
 		else
 		{
 			if (state.castlingRooks.white().kingside  != Square::None)
@@ -1598,19 +1268,11 @@ namespace stormphranj
 
 			const auto srcPiece = state.boards.pieceAt(src);
 
-			if (srcPiece == Piece::BlackKing || srcPiece == Piece::WhiteKing)
+			if ((srcPiece == Piece::BlackKing || srcPiece == Piece::WhiteKing)
+				&& std::abs(squareFile(src) - squareFile(dst)) == 2)
 			{
-				if (g_opts.chess960)
-				{
-					if (state.boards.pieceAt(dst) == copyPieceColor(srcPiece, PieceType::Rook))
-						return Move::castling(src, dst);
-					else return Move::standard(src, dst);
-				}
-				else if (std::abs(squareFile(src) - squareFile(dst)) == 2)
-				{
-					const auto rookFile = squareFile(src) < squareFile(dst) ? 7 : 0;
-					return Move::castling(src, toSquare(squareRank(src), rookFile));
-				}
+				const auto rookFile = squareFile(src) < squareFile(dst) ? 7 : 0;
+				return Move::castling(src, toSquare(squareRank(src), rookFile));
 			}
 
 			if ((srcPiece == Piece::BlackPawn || srcPiece == Piece::WhitePawn)
@@ -1636,38 +1298,6 @@ namespace stormphranj
 			return position;
 
 		return {};
-	}
-
-	auto Position::fromFrcIndex(u32 n) -> std::optional<Position>
-	{
-		assert(g_opts.chess960);
-
-		if (n >= 960)
-		{
-			std::cerr << "invalid frc position index " << n << std::endl;
-			return {};
-		}
-
-		Position position{};
-		position.resetFromFrcIndex(n);
-
-		return position;
-	}
-
-	auto Position::fromDfrcIndex(u32 n) -> std::optional<Position>
-	{
-		assert(g_opts.chess960);
-
-		if (n >= 960 * 960)
-		{
-			std::cerr << "invalid dfrc position index " << n << std::endl;
-			return {};
-		}
-
-		Position position{};
-		position.resetFromDfrcIndex(n);
-
-		return position;
 	}
 
 	auto squareFromString(const std::string &str) -> Square

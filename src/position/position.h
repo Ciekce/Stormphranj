@@ -115,8 +115,6 @@ namespace stormphranj
 
 		auto resetToStarting() -> void;
 		auto resetFromFen(const std::string &fen) -> bool;
-		auto resetFromFrcIndex(u32 n) -> bool;
-		auto resetFromDfrcIndex(u32 n) -> bool;
 
 		auto copyStateFrom(const Position &other) -> void;
 
@@ -497,8 +495,6 @@ namespace stormphranj
 
 		[[nodiscard]] static auto starting() -> Position;
 		[[nodiscard]] static auto fromFen(const std::string &fen) -> std::optional<Position>;
-		[[nodiscard]] static auto fromFrcIndex(u32 n) -> std::optional<Position>;
-		[[nodiscard]] static auto fromDfrcIndex(u32 n) -> std::optional<Position>;
 
 	private:
 		template <bool UpdateKeys = true>

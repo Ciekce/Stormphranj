@@ -29,5 +29,5 @@ namespace stormphranj::datagen
 	constexpr auto UnlimitedGames = std::numeric_limits<u32>::max();
 
 	auto run(const std::function<void()> &printUsage, const std::string &format,
-		bool dfrc, const std::string &output, i32 threads, u32 games = UnlimitedGames) -> i32;
+		const std::string &output, i32 threads, u32 games = UnlimitedGames) -> i32;
 }
