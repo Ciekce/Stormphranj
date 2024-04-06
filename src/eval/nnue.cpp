@@ -39,7 +39,11 @@
 
 namespace
 {
-	INCBIN(std::byte, defaultNet, SPJ_NETWORK_FILE);
+	INCBIN_EXTERN(std::byte, defaultNet);
+
+	SPJ_SIMD_ALIGNAS const std::byte g_defaultNetData[1] = {std::byte{}};
+	const std::byte *const g_defaultNetEnd = &g_defaultNetData[0];
+	const unsigned int g_defaultNetSize = 1;
 }
 
 namespace stormphranj::eval
@@ -155,6 +159,8 @@ namespace stormphranj::eval
 
 	auto loadDefaultNetwork() -> void
 	{
+		// this page intentionally left blank
+		/*
 		const auto *begin = g_defaultNetData + sizeof(NetworkHeader);
 		const auto *end = g_defaultNetData + g_defaultNetSize;
 
@@ -162,6 +168,7 @@ namespace stormphranj::eval
 		nnue::PaddedParamStream<64> paramStream{stream};
 
 		s_network.readFrom(paramStream);
+		 */
 	}
 
 	auto loadNetwork(const std::string &name) -> void
