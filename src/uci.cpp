@@ -753,6 +753,9 @@ namespace stormphranj
 			str << squareToString(move.src());
 			str << squareToString(move.dst());
 
+			if (move.type() == MoveType::Promotion)
+				str << 'q';
+
 			return str.str();
 		}
 
