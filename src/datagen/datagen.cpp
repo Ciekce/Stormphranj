@@ -239,23 +239,15 @@ namespace stormphranj::datagen
 
 					if (!move)
 					{
-						if (thread->pos.isCheck())
+						if (thread->pos.toMove() == Color::Black)
 						{
-							if (thread->pos.toMove() == Color::Black)
-							{
-								outcome = Outcome::WhiteWin;
-								output.push(true, move, ScoreMate);
-							}
-							else
-							{
-								outcome = Outcome::WhiteLoss;
-								output.push(true, move, -ScoreMate);
-							}
+							outcome = Outcome::WhiteWin;
+							output.push(true, move, ScoreMate);
 						}
-						else // stalemate
+						else
 						{
-							outcome = Outcome::Draw;
-							output.push(true, move, 0);
+							outcome = Outcome::WhiteLoss;
+							output.push(true, move, -ScoreMate);
 						}
 
 						break;
@@ -304,7 +296,20 @@ namespace stormphranj::datagen
 
 					thread->pos.applyMoveUnchecked<true, false>(move, &thread->nnueState);
 
-					if (thread->pos.isDrawn(false))
+					if (thread->pos.isBareKingWin())
+					{
+						if (thread->pos.toMove() == Color::Black)
+						{
+							outcome = Outcome::WhiteWin;
+							output.push(true, move, ScoreMate);
+						}
+						else
+						{
+							outcome = Outcome::WhiteLoss;
+							output.push(true, move, -ScoreMate);
+						}
+					}
+					else if (thread->pos.isDrawn(false))
 					{
 						outcome = Outcome::Draw;
 						output.push(true, move, 0);
