@@ -183,6 +183,7 @@ namespace stormphranj
 #endif
 			std::cout << "id author " << Author << '\n';
 
+			std::cout << "option name UCI_Variant type combo default shatranj var shatranj\n";
 			std::cout << "option name Hash type spin default " << DefaultTtSize
 			          << " min " << TtSizeRange.min() << " max " << TtSizeRange.max() << '\n';
 			std::cout << "option name Clear Hash type button\n";
