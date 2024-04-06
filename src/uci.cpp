@@ -43,7 +43,6 @@
 #include "bench.h"
 #include "opts.h"
 #include "tunable.h"
-#include "3rdparty/fathom/tbprobe.h"
 #include "wdl.h"
 
 namespace stormphranj
@@ -103,8 +102,6 @@ namespace stormphranj
 			auto handleVerify() -> void;
 #endif
 
-			bool m_fathomInitialized{false};
-
 			search::Searcher m_searcher{};
 
 			Position m_pos{Position::starting()};
@@ -116,9 +113,6 @@ namespace stormphranj
 		{
 			// can't do this in a destructor, because it will run after tb_free is called
 			m_searcher.quit();
-
-			if (m_fathomInitialized)
-				tb_free();
 		}
 
 		auto UciHandler::run() -> i32
@@ -202,13 +196,6 @@ namespace stormphranj
 				<< (defaultOpts.showWdl ? "true" : "false") << '\n';
 			std::cout << "option name Move Overhead type spin default " << limit::DefaultMoveOverhead
 				<< " min " << limit::MoveOverheadRange.min() << " max " << limit::MoveOverheadRange.max() << '\n';
-			std::cout << "option name SyzygyPath type string default <empty>\n";
-			std::cout << "option name SyzygyProbeDepth type spin default " << defaultOpts.syzygyProbeDepth
-				<< " min " << search::SyzygyProbeDepthRange.min()
-				<< " max " << search::SyzygyProbeDepthRange.max() << '\n';
-			std::cout << "option name SyzygyProbeLimit type spin default " << defaultOpts.syzygyProbeLimit
-				<< " min " << search::SyzygyProbeLimitRange.min()
-				<< " max " << search::SyzygyProbeLimitRange.max() << '\n';
 			std::cout << "option name EvalFile type string default <internal>" << std::endl;
 
 #if SPJ_EXTERNAL_TUNE
@@ -560,41 +547,6 @@ namespace stormphranj
 					{
 						if (const auto newMoveOverhead = util::tryParseI32(valueStr))
 							m_moveOverhead = limit::MoveOverheadRange.clamp(*newMoveOverhead);
-					}
-				}
-				else if (nameStr == "syzygypath")
-				{
-					if (m_searcher.searching())
-						std::cerr << "still searching" << std::endl;
-
-					m_fathomInitialized = true;
-
-					if (valueEmpty)
-					{
-						opts::mutableOpts().syzygyEnabled = false;
-						tb_init("");
-					}
-					else
-					{
-						opts::mutableOpts().syzygyEnabled = valueStr != "<empty>";
-						if (!tb_init(valueStr.c_str()))
-							std::cerr << "failed to initialize Fathom" << std::endl;
-					}
-				}
-				else if (nameStr == "syzygyprobedepth")
-				{
-					if (!valueEmpty)
-					{
-						if (const auto newSyzygyProbeDepth = util::tryParseI32(valueStr))
-							opts::mutableOpts().syzygyProbeDepth = search::SyzygyProbeLimitRange.clamp(*newSyzygyProbeDepth);
-					}
-				}
-				else if (nameStr == "syzygyprobelimit")
-				{
-					if (!valueEmpty)
-					{
-						if (const auto newSyzygyProbeLimit = util::tryParseI32(valueStr))
-							opts::mutableOpts().syzygyProbeLimit = search::SyzygyProbeLimitRange.clamp(*newSyzygyProbeLimit);
 					}
 				}
 				else if (nameStr == "evalfile")

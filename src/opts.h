@@ -33,10 +33,6 @@ namespace stormphranj
 			bool chess960{false};
 			bool showWdl{true};
 
-			bool syzygyEnabled{false};
-			i32 syzygyProbeDepth{1};
-			i32 syzygyProbeLimit{7};
-
 			i32 contempt{wdl::unnormalizeScoreMove32(DefaultNormalizedContempt)};
 		};
 
