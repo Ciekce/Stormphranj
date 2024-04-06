@@ -103,9 +103,11 @@ namespace stormphranj
 		template <Color Us>
 		auto generatePawnsQuiet_(ScoredMoveList &quiet, const BitboardSet &bbs, Bitboard dstMask, Bitboard occ)
 		{
+			constexpr auto PromotionRank = boards::promotionRank<Us>();
+
 			const auto ForwardOffset = offsets::up<Us>();
 
-			const auto forwardDstMask = dstMask & ~occ;
+			const auto forwardDstMask = dstMask & ~PromotionRank & ~occ;
 
 			const auto pawns = bbs.pawns<Us>();
 
