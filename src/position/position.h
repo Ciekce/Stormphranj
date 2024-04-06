@@ -354,6 +354,17 @@ namespace stormphranj
 
 		[[nodiscard]] auto hasCycle(i32 ply) const -> bool;
 
+		[[nodiscard]] inline auto isBareKingWin() const
+		{
+			const auto &bbs = this->bbs();
+
+			const auto us = toMove();
+			const auto them = oppColor(toMove());
+
+			return bbs.occupancy(us) != bbs.kings(us)
+				&& bbs.occupancy(them) == bbs.kings(them);
+		}
+
 		[[nodiscard]] inline auto isDrawn(bool threefold) const
 		{
 			const auto halfmove = currState().halfmove;
@@ -376,23 +387,11 @@ namespace stormphranj
 
 			const auto &bbs = this->bbs();
 
-			if (!bbs.pawns().empty() || !bbs.majors().empty())
-				return false;
-
 			// KK
-			if (bbs.nonPk().empty())
+			if (bbs.occupancy() == bbs.kings())
 				return true;
 
-			// KNK or KBK
-			if ((bbs.blackNonPk().empty() && bbs.whiteNonPk() == bbs.whiteMinors() && !bbs.whiteMinors().multiple())
-				|| (bbs.whiteNonPk().empty() && bbs.blackNonPk() == bbs.blackMinors() && !bbs.blackMinors().multiple()))
-				return true;
-
-			// KBKB OCB
-			if ((bbs.blackNonPk() == bbs.blackAlfils() && bbs.whiteNonPk() == bbs.whiteAlfils())
-				&& !bbs.blackAlfils().multiple() && !bbs.whiteAlfils().multiple()
-				&& (bbs.blackAlfils() & boards::LightSquares).empty() != (bbs.whiteAlfils() & boards::LightSquares).empty())
-				return true;
+			//TODO more?
 
 			return false;
 		}

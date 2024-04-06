@@ -710,7 +710,9 @@ namespace stormphranj::search
 
 			Score score{};
 
-			if (pos.isDrawn(pvNode))
+			if (pos.isBareKingWin())
+				score = -ScoreMate + ply; //TODO correct ply?
+			else if (pos.isDrawn(pvNode))
 				score = drawScore(thread.search.nodes);
 			else
 			{
@@ -858,7 +860,8 @@ namespace stormphranj::search
 		{
 			if (stack.excluded)
 				return alpha;
-			return inCheck ? (-ScoreMate + ply) : 0;
+
+			return -ScoreMate + ply;
 		}
 
 		if (!stack.excluded && !shouldStop(thread.search, false, false))
@@ -957,9 +960,13 @@ namespace stormphranj::search
 
 			++thread.search.nodes;
 
-			const auto score = pos.isDrawn(false)
-				? drawScore(thread.search.nodes)
-				: -qsearch(thread, ply + 1, moveStackIdx + 1, -beta, -alpha);
+			Score score;
+
+			if (pos.isBareKingWin())
+				score = -ScoreMate + ply;
+			else if (pos.isDrawn(false))
+				score = drawScore(thread.search.nodes);
+			else score = -qsearch(thread, ply + 1, moveStackIdx + 1, -beta, -alpha);
 
 			if (score > bestScore)
 			{
