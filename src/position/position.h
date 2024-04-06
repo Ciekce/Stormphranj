@@ -46,13 +46,9 @@ namespace stormphranj
 		Bitboard pinned{};
 		Bitboard threats{};
 
-		CastlingRooks castlingRooks{};
-
 		Move lastMove{NullMove};
 
 		u16 halfmove{};
-
-		Square enPassant{Square::None};
 
 		std::array<Square, 2> kings{Square::None, Square::None};
 
@@ -77,7 +73,7 @@ namespace stormphranj
 		}
 	};
 
-	static_assert(sizeof(BoardState) == 176);
+	static_assert(sizeof(BoardState) == 168);
 
 	[[nodiscard]] inline auto squareToString(Square square)
 	{
@@ -160,10 +156,6 @@ namespace stormphranj
 			return m_blackToMove ? Color::White : Color::Black;
 		}
 
-		[[nodiscard]] inline auto castlingRooks() const -> const auto & { return currState().castlingRooks; }
-
-		[[nodiscard]] inline auto enPassant() const { return currState().enPassant; }
-
 		[[nodiscard]] inline auto halfmove() const { return currState().halfmove; }
 		[[nodiscard]] inline auto fullmove() const { return m_fullmove; }
 
@@ -201,16 +193,17 @@ namespace stormphranj
 
 			Bitboard attackers{};
 
-			const auto queens = bbs.queens();
-
-			const auto rooks = queens | bbs.rooks();
+			const auto rooks = bbs.rooks();
 			attackers |= rooks & attacks::getRookAttacks(square, occupancy);
-
-			const auto bishops = queens | bbs.bishops();
-			attackers |= bishops & attacks::getBishopAttacks(square, occupancy);
 
 			attackers |= bbs.blackPawns() & attacks::getPawnAttacks(square, Color::White);
 			attackers |= bbs.whitePawns() & attacks::getPawnAttacks(square, Color::Black);
+
+			const auto alfils = bbs.alfils();
+			attackers |= alfils & attacks::getAlfilAttacks(square);
+
+			const auto ferzes = bbs.ferzes();
+			attackers |= ferzes & attacks::getFerzAttacks(square);
 
 			const auto knights = bbs.knights();
 			attackers |= knights & attacks::getKnightAttacks(square);
@@ -231,19 +224,20 @@ namespace stormphranj
 
 			const auto occ = bbs.occupancy();
 
-			const auto queens = bbs.queens(attacker);
-
-			const auto rooks = queens | bbs.rooks(attacker);
-			attackers |= rooks & attacks::getRookAttacks(square, occ);
-
-			const auto bishops = queens | bbs.bishops(attacker);
-			attackers |= bishops & attacks::getBishopAttacks(square, occ);
-
 			const auto pawns = bbs.pawns(attacker);
 			attackers |= pawns & attacks::getPawnAttacks(square, oppColor(attacker));
 
+			const auto alfils = bbs.alfils(attacker);
+			attackers |= alfils & attacks::getAlfilAttacks(square);
+
+			const auto ferzes = bbs.ferzes(attacker);
+			attackers |= ferzes & attacks::getFerzAttacks(square);
+
 			const auto knights = bbs.knights(attacker);
 			attackers |= knights & attacks::getKnightAttacks(square);
+
+			const auto rooks = bbs.rooks(attacker);
+			attackers |= rooks & attacks::getRookAttacks(square, occ);
 
 			const auto kings = bbs.kings(attacker);
 			attackers |= kings & attacks::getKingAttacks(square);
@@ -273,21 +267,23 @@ namespace stormphranj
 				!(knights & attacks::getKnightAttacks(square)).empty())
 				return true;
 
+			if (const auto ferzes = bbs.ferzes(attacker);
+				!(ferzes & attacks::getFerzAttacks(square)).empty())
+				return true;
+
 			if (const auto pawns = bbs.pawns(attacker);
 				!(pawns & attacks::getPawnAttacks(square, oppColor(attacker))).empty())
+				return true;
+
+			if (const auto alfils = bbs.alfils(attacker);
+				!(alfils & attacks::getAlfilAttacks(square)).empty())
 				return true;
 
 			if (const auto kings = bbs.kings(attacker);
 				!(kings & attacks::getKingAttacks(square)).empty())
 				return true;
 
-			const auto queens = bbs.queens(attacker);
-
-			if (const auto bishops = queens | bbs.bishops(attacker);
-				!(bishops & attacks::getBishopAttacks(square, occ)).empty())
-				return true;
-
-			if (const auto rooks = queens | bbs.rooks(attacker);
+			if (const auto rooks = bbs.rooks(attacker);
 				!(rooks & attacks::getRookAttacks(square, occ)).empty())
 				return true;
 
@@ -393,9 +389,9 @@ namespace stormphranj
 				return true;
 
 			// KBKB OCB
-			if ((bbs.blackNonPk() == bbs.blackBishops() && bbs.whiteNonPk() == bbs.whiteBishops())
-				&& !bbs.blackBishops().multiple() && !bbs.whiteBishops().multiple()
-				&& (bbs.blackBishops() & boards::LightSquares).empty() != (bbs.whiteBishops() & boards::LightSquares).empty())
+			if ((bbs.blackNonPk() == bbs.blackAlfils() && bbs.whiteNonPk() == bbs.whiteAlfils())
+				&& !bbs.blackAlfils().multiple() && !bbs.whiteAlfils().multiple()
+				&& (bbs.blackAlfils() & boards::LightSquares).empty() != (bbs.whiteAlfils() & boards::LightSquares).empty())
 				return true;
 
 			return false;
@@ -411,24 +407,15 @@ namespace stormphranj
 			assert(move != NullMove);
 
 			const auto type = move.type();
-
-			if (type == MoveType::Castling)
-				return Piece::None;
-			else if (type == MoveType::EnPassant)
-				return flipPieceColor(boards().pieceAt(move.src()));
-			else return boards().pieceAt(move.dst());
+			return boards().pieceAt(move.dst());
 		}
 
 		[[nodiscard]] inline auto isNoisy(Move move) const
 		{
 			assert(move != NullMove);
 
-			const auto type = move.type();
-
-			return type != MoveType::Castling
-				&& (type == MoveType::EnPassant
-					|| move.promo() == PieceType::Queen
-					|| boards().pieceAt(move.dst()) != Piece::None);
+			return move.type() == MoveType::Promotion
+				|| boards().pieceAt(move.dst()) != Piece::None;
 		}
 
 		[[nodiscard]] inline auto noisyCapturedPiece(Move move) const -> std::pair<bool, Piece>
@@ -437,15 +424,8 @@ namespace stormphranj
 
 			const auto type = move.type();
 
-			if (type == MoveType::Castling)
-				return {false, Piece::None};
-			else if (type == MoveType::EnPassant)
-				return {true, colorPiece(PieceType::Pawn, toMove())};
-			else
-			{
-				const auto captured = boards().pieceAt(move.dst());
-				return {captured != Piece::None || move.promo() == PieceType::Queen, captured};
-			}
+			const auto captured = boards().pieceAt(move.dst());
+			return {captured != Piece::None || move.type() == MoveType::Promotion, captured};
 		}
 
 		[[nodiscard]] auto toFen() const -> std::string;
@@ -457,8 +437,6 @@ namespace stormphranj
 
 			// every other field is a function of these
 			return ourState.boards == theirState.boards
-				&& ourState.castlingRooks == theirState.castlingRooks
-				&& ourState.enPassant == theirState.enPassant
 				&& ourState.halfmove == theirState.halfmove
 				&& m_fullmove == other.m_fullmove;
 		}
@@ -473,13 +451,10 @@ namespace stormphranj
 				&& currState().key == other.m_states.back().key;
 		}
 
-		template <bool EnPassantFromMoves = false>
 		auto regen() -> void;
 
 #ifndef NDEBUG
 		auto printHistory(Move last = NullMove) -> void;
-
-		template <bool HasHistory = true>
 		auto verify() -> bool;
 #endif
 
@@ -508,11 +483,7 @@ namespace stormphranj
 		[[nodiscard]] auto movePiece(Piece piece, Square src, Square dst, eval::NnueUpdates &nnueUpdates) -> Piece;
 
 		template <bool UpdateKeys = true, bool UpdateNnue = true>
-		auto promotePawn(Piece pawn, Square src, Square dst, PieceType promo, eval::NnueUpdates &nnueUpdates) -> Piece;
-		template <bool UpdateKeys = true, bool UpdateNnue = true>
-		auto castle(Piece king, Square kingSrc, Square rookSrc, eval::NnueUpdates &nnueUpdates) -> void;
-		template <bool UpdateKeys = true, bool UpdateNnue = true>
-		auto enPassant(Piece pawn, Square src, Square dst, eval::NnueUpdates &nnueUpdates) -> Piece;
+		auto promotePawn(Piece pawn, Square src, Square dst, eval::NnueUpdates &nnueUpdates) -> Piece;
 
 		[[nodiscard]] inline auto calcCheckers() const
 		{
@@ -537,16 +508,12 @@ namespace stormphranj
 			const auto ourOcc = bbs.occupancy(color);
 			const auto oppOcc = bbs.occupancy(opponent);
 
-			const auto oppQueens = bbs.queens(opponent);
-
-			auto potentialAttackers
-				= attacks::getBishopAttacks(king, oppOcc) & (oppQueens | bbs.bishops(opponent))
-				| attacks::  getRookAttacks(king, oppOcc) & (oppQueens | bbs.  rooks(opponent));
+			auto potentialAttackers = attacks::getRookAttacks(king, oppOcc) & bbs.rooks(opponent);
 
 			while (potentialAttackers)
 			{
 				const auto potentialAttacker = potentialAttackers.popLowestSquare();
-				const auto maybePinned = ourOcc & rayBetween(potentialAttacker, king);
+				const auto maybePinned = ourOcc & orthoRayBetween(potentialAttacker, king);
 
 				if (maybePinned.one())
 					pinned |= maybePinned;
@@ -567,20 +534,18 @@ namespace stormphranj
 
 			const auto occ = bbs.occupancy();
 
-			const auto queens = bbs.queens(them);
-
-			auto rooks = queens | bbs.rooks(them);
-			while (rooks)
+			auto alfils = bbs.alfils(them);
+			while (alfils)
 			{
-				const auto rook = rooks.popLowestSquare();
-				threats |= attacks::getRookAttacks(rook, occ);
+				const auto alfil = alfils.popLowestSquare();
+				threats |= attacks::getAlfilAttacks(alfil);
 			}
 
-			auto bishops = queens | bbs.bishops(them);
-			while (bishops)
+			auto ferzes = bbs.ferzes(them);
+			while (ferzes)
 			{
-				const auto bishop = bishops.popLowestSquare();
-				threats |= attacks::getBishopAttacks(bishop, occ);
+				const auto ferz = ferzes.popLowestSquare();
+				threats |= attacks::getFerzAttacks(ferz);
 			}
 
 			auto knights = bbs.knights(them);
@@ -588,6 +553,13 @@ namespace stormphranj
 			{
 				const auto knight = knights.popLowestSquare();
 				threats |= attacks::getKnightAttacks(knight);
+			}
+
+			auto rooks = bbs.rooks(them);
+			while (rooks)
+			{
+				const auto rook = rooks.popLowestSquare();
+				threats |= attacks::getRookAttacks(rook, occ);
 			}
 
 			const auto pawns = bbs.pawns(them);

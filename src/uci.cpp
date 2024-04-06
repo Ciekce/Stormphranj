@@ -750,12 +750,7 @@ namespace stormphranj
 			std::ostringstream str{};
 
 			str << squareToString(move.src());
-
-			const auto type = move.type();
-
 			str << squareToString(move.dst());
-			if (type == MoveType::Promotion)
-				str << pieceTypeToChar(move.promo());
 
 			return str.str();
 		}
@@ -862,16 +857,8 @@ namespace stormphranj
 
 			std::ostringstream str{};
 
-			if (move.type() != MoveType::Standard)
-			{
-				switch (move.type())
-				{
-				case MoveType::Promotion: str << "p:"; break;
-				case MoveType::Castling:  str << "c:"; break;
-				case MoveType::EnPassant: str << "e:"; break;
-				default: __builtin_unreachable();
-				}
-			}
+			if (move.type() == MoveType::Promotion)
+				str << "p:";
 
 			str << moveToString(move);
 

@@ -203,23 +203,15 @@ namespace stormphranj
 
 	private:
 		static constexpr auto Mvv = std::array {
-			10, // pawn
-			38, // knight
-			40, // bishop
-			50, // rook
-			110 // queen
-		};
-
-		static constexpr auto PromoScores = std::array {
-			-1, // knight
-			-3, // bishop
-			-2, // rook
-			 0  // queen
+			10,  // pawn
+			40,  // alfil
+			110, // ferz
+			38,  // knight
+			50   // rook
 		};
 
 		static constexpr i32 GoodNoisyBonus = 8 * 2000 * 2000;
 		static constexpr i32 GoodNoisyThreshold = GoodNoisyBonus / 2;
-		static constexpr i32 PromoMultiplier = 2000;
 
 		inline auto moveHistory(Move move) -> i32
 		{
@@ -313,11 +305,6 @@ namespace stormphranj
 				const auto historyScore = m_history->quietScore(historyMove, m_pos.threats(), m_ply, m_prevMoves);
 				m_data.histories[idx] = move.score = historyScore;
 			}
-
-			// knight promos first, rook then bishop promos last
-			//TODO capture promos first
-			if (move.move.type() == MoveType::Promotion)
-				move.score += PromoScores[move.move.promoIdx()] * PromoMultiplier;
 		}
 
 		inline auto scoreNoisy(i32 idx)
@@ -326,9 +313,7 @@ namespace stormphranj
 
 			auto &move = m_data.moves[idx];
 
-			const auto captured = move.move.type() == MoveType::EnPassant
-				? colorPiece(PieceType::Pawn, m_pos.opponent())
-				: boards.pieceAt(move.move.dst());
+			const auto captured = boards.pieceAt(move.move.dst());
 
 			if (m_history)
 			{
@@ -340,11 +325,9 @@ namespace stormphranj
 			if (captured != Piece::None)
 				move.score += Mvv[static_cast<i32>(pieceType(captured))];
 
-			if ((captured != Piece::None || move.move.promo() == PieceType::Queen)
+			if ((captured != Piece::None || move.move.type() == MoveType::Promotion)
 				&& see::see(m_pos, move.move))
 				move.score += GoodNoisyBonus;
-			else if (move.move.type() == MoveType::Promotion)
-				move.score += PromoScores[move.move.promoIdx()] * PromoMultiplier;
 		}
 
 		const Position &m_pos;

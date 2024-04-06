@@ -32,9 +32,7 @@ namespace stormphranj
 	enum class MoveType
 	{
 		Standard = 0,
-		Promotion,
-		Castling,
-		EnPassant
+		Promotion
 	};
 
 	class Move
@@ -55,9 +53,6 @@ namespace stormphranj
 		[[nodiscard]] constexpr auto dstRank() const { return (m_move >> 7) & 0x7; }
 		[[nodiscard]] constexpr auto dstFile() const { return (m_move >> 4) & 0x7; }
 
-		[[nodiscard]] constexpr auto promoIdx() const { return (m_move >> 2) & 0x3; }
-		[[nodiscard]] constexpr auto promo() const { return static_cast<PieceType>(promoIdx() + 1); }
-
 		[[nodiscard]] constexpr auto type() const { return static_cast<MoveType>(m_move & 0x3); }
 
 		[[nodiscard]] constexpr auto isNull() const { return /*src() == dst()*/ m_move == 0; }
@@ -77,31 +72,12 @@ namespace stormphranj
 			)};
 		}
 
-		[[nodiscard]] static constexpr auto promotion(Square src, Square dst, PieceType promo)
+		[[nodiscard]] static constexpr auto promotion(Square src, Square dst)
 		{
 			return Move{static_cast<u16>(
 				(static_cast<u16>(src) << 10)
 				| (static_cast<u16>(dst) << 4)
-				| ((static_cast<u16>(promo) - 1) << 2)
 				| static_cast<u16>(MoveType::Promotion)
-			)};
-		}
-
-		[[nodiscard]] static constexpr auto castling(Square src, Square dst)
-		{
-			return Move{static_cast<u16>(
-				(static_cast<u16>(src) << 10)
-				| (static_cast<u16>(dst) << 4)
-				| static_cast<u16>(MoveType::Castling)
-			)};
-		}
-
-		[[nodiscard]] static constexpr auto enPassant(Square src, Square dst)
-		{
-			return Move{static_cast<u16>(
-				(static_cast<u16>(src) << 10)
-				| (static_cast<u16>(dst) << 4)
-				| static_cast<u16>(MoveType::EnPassant)
 			)};
 		}
 

@@ -39,7 +39,7 @@ namespace stormphranj::attacks
 				for (u32 i = 0; i < maxEntries; ++i)
 				{
 					const auto occupancy = util::pdep(i, invMask);
-					const auto idx = getRookIdx(occupancy, static_cast<Square>(square));
+					const auto idx = getIdx(occupancy, static_cast<Square>(square));
 
 					if (!dst[data.offset + idx].empty())
 						continue;
@@ -54,41 +54,8 @@ namespace stormphranj::attacks
 
 			return dst;
 		}
-
-		auto generateBishopAttacks()
-		{
-			std::array<Bitboard, BishopData.tableSize> dst{};
-
-			for (u32 square = 0; square < 64; ++square)
-			{
-				const auto &data = BishopData.data[square];
-
-				const auto invMask = ~data.mask;
-				const auto maxEntries = 1 << invMask.popcount();
-
-				for (u32 i = 0; i < maxEntries; ++i)
-				{
-					const auto occupancy = util::pdep(i, invMask);
-					const auto idx = getBishopIdx(occupancy, static_cast<Square>(square));
-
-					if (!dst[data.offset + idx].empty())
-						continue;
-
-					for (const auto dir : {
-						offsets::UpLeft, offsets::UpRight, offsets::DownLeft, offsets::DownRight
-					})
-					{
-						dst[data.offset + idx]
-							|= internal::generateSlidingAttacks(static_cast<Square>(square), dir, occupancy);
-					}
-				}
-			}
-
-			return dst;
-		}
 	}
 
-	const std::array<Bitboard,   RookData.tableSize>   RookAttacks =   generateRookAttacks();
-	const std::array<Bitboard, BishopData.tableSize> BishopAttacks = generateBishopAttacks();
+	const std::array<Bitboard, RookData.tableSize> RookAttacks = generateRookAttacks();
 }
 #endif // !SPJ_HAS_BMI2

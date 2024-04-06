@@ -162,7 +162,7 @@ namespace stormphranj
 	private:
 		using Table = std::array<std::array<std::array<std::array<HistoryScore, 2>, 2>, 64>, 12>;
 		using CountermoveTable = std::array<std::array<Move, 64>, 12>;
-		// 13 to account for non-capture queen promos
+		// 13 to account for non-capture promos
 		using CaptureTable = std::array<std::array<std::array<std::array<HistoryScore, 2>, 64>, 12>, 13>;
 		using ContinuationTable = std::array<std::array<ContinuationEntry, 64>, 12>;
 

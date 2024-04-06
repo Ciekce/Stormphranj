@@ -36,14 +36,14 @@ namespace stormphranj
 	{
 		BlackPawn = 0,
 		WhitePawn,
+		BlackAlfil,
+		WhiteAlfil,
+		BlackFerz,
+		WhiteFerz,
 		BlackKnight,
 		WhiteKnight,
-		BlackBishop,
-		WhiteBishop,
 		BlackRook,
 		WhiteRook,
-		BlackQueen,
-		WhiteQueen,
 		BlackKing,
 		WhiteKing,
 		None
@@ -52,10 +52,10 @@ namespace stormphranj
 	enum class PieceType
 	{
 		Pawn = 0,
+		Alfil,
+		Ferz,
 		Knight,
-		Bishop,
 		Rook,
-		Queen,
 		King,
 		None
 	};
@@ -113,14 +113,14 @@ namespace stormphranj
 		{
 		case 'p': return Piece::  BlackPawn;
 		case 'P': return Piece::  WhitePawn;
+		case 'b': return Piece:: BlackAlfil;
+		case 'B': return Piece:: WhiteAlfil;
+		case 'q': return Piece::  BlackFerz;
+		case 'Q': return Piece::  WhiteFerz;
 		case 'n': return Piece::BlackKnight;
 		case 'N': return Piece::WhiteKnight;
-		case 'b': return Piece::BlackBishop;
-		case 'B': return Piece::WhiteBishop;
 		case 'r': return Piece::  BlackRook;
 		case 'R': return Piece::  WhiteRook;
-		case 'q': return Piece:: BlackQueen;
-		case 'Q': return Piece:: WhiteQueen;
 		case 'k': return Piece::  BlackKing;
 		case 'K': return Piece::  WhiteKing;
 		default : return Piece::       None;
@@ -134,14 +134,14 @@ namespace stormphranj
 		case Piece::       None: return ' ';
 		case Piece::  BlackPawn: return 'p';
 		case Piece::  WhitePawn: return 'P';
+		case Piece:: BlackAlfil: return 'b';
+		case Piece:: WhiteAlfil: return 'B';
+		case Piece::  BlackFerz: return 'q';
+		case Piece::  WhiteFerz: return 'Q';
 		case Piece::BlackKnight: return 'n';
 		case Piece::WhiteKnight: return 'N';
-		case Piece::BlackBishop: return 'b';
-		case Piece::WhiteBishop: return 'B';
 		case Piece::  BlackRook: return 'r';
 		case Piece::  WhiteRook: return 'R';
-		case Piece:: BlackQueen: return 'q';
-		case Piece:: WhiteQueen: return 'Q';
 		case Piece::  BlackKing: return 'k';
 		case Piece::  WhiteKing: return 'K';
 		default: return ' ';
@@ -153,10 +153,10 @@ namespace stormphranj
 		switch (c)
 		{
 		case 'p': return PieceType::  Pawn;
+		case 'b': return PieceType:: Alfil;
+		case 'q': return PieceType::  Ferz;
 		case 'n': return PieceType::Knight;
-		case 'b': return PieceType::Bishop;
 		case 'r': return PieceType::  Rook;
-		case 'q': return PieceType:: Queen;
 		case 'k': return PieceType::  King;
 		default : return PieceType::  None;
 		}
@@ -168,10 +168,10 @@ namespace stormphranj
 		{
 		case PieceType::  None: return ' ';
 		case PieceType::  Pawn: return 'p';
+		case PieceType:: Alfil: return 'b';
+		case PieceType::  Ferz: return 'q';
 		case PieceType::Knight: return 'n';
-		case PieceType::Bishop: return 'b';
 		case PieceType::  Rook: return 'r';
-		case PieceType:: Queen: return 'q';
 		case PieceType::  King: return 'k';
 		default: return ' ';
 		}
@@ -247,74 +247,10 @@ namespace stormphranj
 		return c == Color::Black ? 7 - rank : rank;
 	}
 
-	struct CastlingRooks
-	{
-		struct RookPair
-		{
-			Square kingside{Square::None};
-			Square queenside{Square::None};
-
-			inline auto clear()
-			{
-				kingside = Square::None;
-				queenside = Square::None;
-			}
-
-			inline auto unset(Square square)
-			{
-				assert(square != Square::None);
-
-				if (square == kingside)
-					kingside = Square::None;
-				else if (square == queenside)
-					queenside = Square::None;
-			}
-
-			[[nodiscard]] inline auto operator==(const RookPair &) const -> bool = default;
-		};
-
-		std::array<RookPair, 2> rooks;
-
-		[[nodiscard]] inline auto black() const -> const auto &
-		{
-			return rooks[0];
-		}
-
-		[[nodiscard]] inline auto white() const -> const auto &
-		{
-			return rooks[1];
-		}
-
-		[[nodiscard]] inline auto black() -> auto &
-		{
-			return rooks[0];
-		}
-
-		[[nodiscard]] inline auto white() -> auto &
-		{
-			return rooks[1];
-		}
-
-		[[nodiscard]] inline auto color(Color c) const -> const auto &
-		{
-			assert(c != Color::None);
-			return rooks[static_cast<i32>(c)];
-		}
-
-		[[nodiscard]] inline auto color(Color c) -> auto &
-		{
-			assert(c != Color::None);
-			return rooks[static_cast<i32>(c)];
-		}
-
-		[[nodiscard]] inline auto operator==(const CastlingRooks &) const -> bool = default;
-	};
-
 	using Score = i32;
 
 	constexpr auto ScoreInf = 32767;
 	constexpr auto ScoreMate = 32766;
-	constexpr auto ScoreTbWin = 30000;
 	constexpr auto ScoreWin = 25000;
 
 	constexpr i32 MaxDepth = 255;

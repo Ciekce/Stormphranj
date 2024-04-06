@@ -163,20 +163,6 @@ namespace stormphranj::eval
 
 					next->subSubAddFrom(*m_curr, g_network.featureTransformer(), c, sub0, sub1, add);
 				}
-				else if (addCount == 2 && subCount == 2) // castling
-				{
-					const auto [subPiece0, subSquare0] = updates.sub[0];
-					const auto [subPiece1, subSquare1] = updates.sub[1];
-					const auto [addPiece0, addSquare0] = updates.add[0];
-					const auto [addPiece1, addSquare1] = updates.add[1];
-
-					const auto sub0 = featureIndex(c, subPiece0, subSquare0, king);
-					const auto sub1 = featureIndex(c, subPiece1, subSquare1, king);
-					const auto add0 = featureIndex(c, addPiece0, addSquare0, king);
-					const auto add1 = featureIndex(c, addPiece1, addSquare1, king);
-
-					next->subSubAddAddFrom(*m_curr, g_network.featureTransformer(), c, sub0, sub1, add0, add1);
-				}
 				else assert(false && "Materialising a piece from nowhere?");
 			}
 

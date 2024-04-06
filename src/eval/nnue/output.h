@@ -66,10 +66,10 @@ namespace stormphranj::eval::nnue::output
 
 		static inline auto getBucket(const BitboardSet &bbs) -> u32
 		{
-			return (!bbs.blackBishops().empty()
-					&& !bbs.whiteBishops().empty()
-					&& (bbs.blackBishops() & boards::LightSquares).empty()
-						!= (bbs.whiteBishops() & boards::LightSquares).empty())
+			return (!bbs.blackAlfils().empty()
+					&& !bbs.whiteAlfils().empty()
+					&& (bbs.blackAlfils() & boards::LightSquares).empty()
+						!= (bbs.whiteAlfils() & boards::LightSquares).empty())
 				? 1 : 0;
 		}
 	};
