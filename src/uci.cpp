@@ -51,7 +51,7 @@ namespace stormphranj
 
 	namespace
 	{
-		constexpr auto Name = "Stormphrax";
+		constexpr auto Name = "Stormphranj";
 		constexpr auto Version = SPJ_STRINGIFY(SPJ_VERSION);
 		constexpr auto Author = "Ciekce";
 
