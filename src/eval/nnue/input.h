@@ -1,19 +1,19 @@
 /*
- * Stormphrax, a UCI chess engine
+ * Stormphranj, a UCI shatranj engine
  * Copyright (C) 2024 Ciekce
  *
- * Stormphrax is free software: you can redistribute it and/or modify
+ * Stormphranj is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Stormphrax is distributed in the hope that it will be useful,
+ * Stormphranj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Stormphrax. If not, see <https://www.gnu.org/licenses/>.
+ * along with Stormphranj. If not, see <https://www.gnu.org/licenses/>.
  */
 
 #pragma once
@@ -32,7 +32,7 @@
 #include "io.h"
 #include "features.h"
 
-namespace stormphrax::eval::nnue
+namespace stormphranj::eval::nnue
 {
 	template <typename Ft>
 	class Accumulator
@@ -134,7 +134,7 @@ namespace stormphrax::eval::nnue
 		static constexpr auto WeightCount = Ft::WeightCount;
 		static constexpr auto OutputCount = Ft::OutputCount;
 
-		SP_SIMD_ALIGNAS std::array<std::array<Type, OutputCount>, 2> m_outputs;
+		SPJ_SIMD_ALIGNAS std::array<std::array<Type, OutputCount>, 2> m_outputs;
 
 		static inline auto subAdd(std::span<Type, OutputCount> src, std::span<Type, OutputCount> dst,
 			std::span<const Type, WeightCount> delta, u32 subOffset, u32 addOffset) -> void
@@ -256,8 +256,8 @@ namespace stormphrax::eval::nnue
 		static_assert( InputCount > 0);
 		static_assert(OutputCount > 0);
 
-		SP_SIMD_ALIGNAS std::array<WeightType, WeightCount> weights;
-		SP_SIMD_ALIGNAS std::array<OutputType,   BiasCount> biases;
+		SPJ_SIMD_ALIGNAS std::array<WeightType, WeightCount> weights;
+		SPJ_SIMD_ALIGNAS std::array<OutputType,   BiasCount> biases;
 
 		inline auto readFrom(IParamStream &stream) -> bool
 		{

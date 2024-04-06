@@ -1,25 +1,20 @@
 /*
-Copyright (c) 2015 basil00
-Modifications Copyright (c) 2016-2020 by Jon Dart
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+ * Stormphranj, a UCI shatranj engine
+ * Copyright (C) 2024 Ciekce
+ *
+ * Stormphranj is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Stormphranj is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Stormphranj. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #define TB_PAWN 1
 #define TB_KNIGHT 2
@@ -130,7 +125,7 @@ static inline uint64_t pieces_by_type(const Pos *pos, Color c, PieceType p) {
 }
 
 static const char piece_to_char[] = " PNBRQK  pnbrqk";
-  
+
 // map upper-case characters to piece types
 static PieceType char_to_piece_type(char c) {
     for (int i = PAWN; i <= KING; i++)
@@ -731,7 +726,7 @@ static TbMove *gen_moves(const Pos *pos, TbMove *moves)
     uint64_t us = (pos->turn? pos->white: pos->black),
              them = (pos->turn? pos->black: pos->white);
     uint64_t b, att;
-    
+
     {
         unsigned from = lsb(pos->kings & us);
         for (att = king_attacks(from) & ~us; att; att = poplsb(att))
@@ -948,32 +943,32 @@ static bool is_valid(const Pos *pos)
 
 static bool do_move(Pos *pos, const Pos *pos0, TbMove move)
 {
-    unsigned from = move_from(move); 
-    unsigned to = move_to(move);  
-    unsigned promotes = move_promotes(move);  
+    unsigned from = move_from(move);
+    unsigned to = move_to(move);
+    unsigned promotes = move_promotes(move);
     pos->turn = !pos0->turn;
     pos->white = do_bb_move(pos0->white, from, to);
     pos->black = do_bb_move(pos0->black, from, to);
     pos->kings = do_bb_move(pos0->kings, from, to);
-    pos->queens = do_bb_move(pos0->queens, from, to); 
+    pos->queens = do_bb_move(pos0->queens, from, to);
     pos->rooks = do_bb_move(pos0->rooks, from, to);
-    pos->bishops = do_bb_move(pos0->bishops, from, to);  
-    pos->knights = do_bb_move(pos0->knights, from, to);  
+    pos->bishops = do_bb_move(pos0->bishops, from, to);
+    pos->knights = do_bb_move(pos0->knights, from, to);
     pos->pawns = do_bb_move(pos0->pawns, from, to);
     pos->ep = 0;
-    if (promotes != TB_PROMOTES_NONE) 
-    {  
+    if (promotes != TB_PROMOTES_NONE)
+    {
         pos->pawns &= ~board(to);       // Promotion
         switch (promotes)
-        { 
+        {
             case TB_PROMOTES_QUEEN:
                 pos->queens |= board(to); break;
-            case TB_PROMOTES_ROOK: 
-                pos->rooks |= board(to); break; 
-            case TB_PROMOTES_BISHOP:  
-                pos->bishops |= board(to); break;  
-            case TB_PROMOTES_KNIGHT:  
-                pos->knights |= board(to); break;  
+            case TB_PROMOTES_ROOK:
+                pos->rooks |= board(to); break;
+            case TB_PROMOTES_BISHOP:
+                pos->bishops |= board(to); break;
+            case TB_PROMOTES_KNIGHT:
+                pos->knights |= board(to); break;
         }
         pos->rule50 = 0;
     }

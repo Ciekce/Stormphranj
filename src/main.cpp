@@ -1,19 +1,19 @@
 /*
- * Stormphrax, a UCI chess engine
+ * Stormphranj, a UCI shatranj engine
  * Copyright (C) 2024 Ciekce
  *
- * Stormphrax is free software: you can redistribute it and/or modify
+ * Stormphranj is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Stormphrax is distributed in the hope that it will be useful,
+ * Stormphranj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Stormphrax. If not, see <https://www.gnu.org/licenses/>.
+ * along with Stormphranj. If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "uci.h"
@@ -24,11 +24,11 @@
 #include "tunable.h"
 #include "cuckoo.h"
 
-#if SP_EXTERNAL_TUNE
+#if SPJ_EXTERNAL_TUNE
 #include "util/split.h"
 #endif
 
-using namespace stormphrax;
+using namespace stormphranj;
 
 auto main(i32 argc, const char *argv[]) -> i32
 {
@@ -92,7 +92,7 @@ auto main(i32 argc, const char *argv[]) -> i32
 
 			return datagen::run(printUsage, argv[2], dfrc, argv[4], static_cast<i32>(threads), games);
 		}
-#if SP_EXTERNAL_TUNE
+#if SPJ_EXTERNAL_TUNE
 		else if (mode == "printwf"
 			|| mode == "printctt"
 			|| mode == "printob")

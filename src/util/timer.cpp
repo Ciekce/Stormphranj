@@ -1,19 +1,19 @@
 /*
- * Stormphrax, a UCI chess engine
+ * Stormphranj, a UCI shatranj engine
  * Copyright (C) 2024 Ciekce
  *
- * Stormphrax is free software: you can redistribute it and/or modify
+ * Stormphranj is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Stormphrax is distributed in the hope that it will be useful,
+ * Stormphranj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Stormphrax. If not, see <https://www.gnu.org/licenses/>.
+ * along with Stormphranj. If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "timer.h"
@@ -22,7 +22,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-namespace stormphrax::util
+namespace stormphranj::util
 {
 	Timer::Timer()
 	{
@@ -50,7 +50,7 @@ namespace stormphrax::util
 #else // assume posix
 #include <time.h>
 
-namespace stormphrax::util
+namespace stormphranj::util
 {
 	Timer::Timer()
 	{

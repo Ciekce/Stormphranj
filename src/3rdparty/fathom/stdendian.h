@@ -1,3 +1,21 @@
+/*
+ * Stormphranj, a UCI shatranj engine
+ * Copyright (C) 2024 Ciekce
+ *
+ * Stormphranj is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Stormphranj is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Stormphranj. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #ifndef _STDENDIAN_H_
 #define _STDENDIAN_H_
 /* from https://gist.github.com/michaeljclark/3b4fd912f6fa8bb598b3 */
@@ -46,7 +64,7 @@
  *                        macro is present for OpenCL compatibility
  *
  *   The implementation provides a uniform interface to endian macros using only
- *   system headers on recent Linux, Darwin, FreeBSD, Solaris and Windows systems. 
+ *   system headers on recent Linux, Darwin, FreeBSD, Solaris and Windows systems.
  *
  *   This approach is intended to avoid the need for preflight configure scripts.
  *   An alternative approach would be to test compiler CPU architecture marcros.

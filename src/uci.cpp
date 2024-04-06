@@ -1,19 +1,19 @@
 /*
- * Stormphrax, a UCI chess engine
+ * Stormphranj, a UCI shatranj engine
  * Copyright (C) 2024 Ciekce
  *
- * Stormphrax is free software: you can redistribute it and/or modify
+ * Stormphranj is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Stormphrax is distributed in the hope that it will be useful,
+ * Stormphranj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Stormphrax. If not, see <https://www.gnu.org/licenses/>.
+ * along with Stormphranj. If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "uci.h"
@@ -46,17 +46,17 @@
 #include "3rdparty/fathom/tbprobe.h"
 #include "wdl.h"
 
-namespace stormphrax
+namespace stormphranj
 {
 	using namespace uci;
 
 	namespace
 	{
 		constexpr auto Name = "Stormphrax";
-		constexpr auto Version = SP_STRINGIFY(SP_VERSION);
+		constexpr auto Version = SPJ_STRINGIFY(SPJ_VERSION);
 		constexpr auto Author = "Ciekce";
 
-#if SP_EXTERNAL_TUNE
+#if SPJ_EXTERNAL_TUNE
 		auto tunableParams() -> auto &
 		{
 			static std::unordered_map<std::string, tunable::TunableParam> params{};
@@ -182,8 +182,8 @@ namespace stormphrax
 		{
 			static const opts::GlobalOptions defaultOpts{};
 
-#ifdef SP_COMMIT_HASH
-			std::cout << "id name " << Name << ' ' << Version << ' ' << SP_STRINGIFY(SP_COMMIT_HASH) << '\n';
+#ifdef SPJ_COMMIT_HASH
+			std::cout << "id name " << Name << ' ' << Version << ' ' << SPJ_STRINGIFY(SPJ_COMMIT_HASH) << '\n';
 #else
 			std::cout << "id name " << Name << ' ' << Version << '\n';
 #endif
@@ -211,7 +211,7 @@ namespace stormphrax
 				<< " max " << search::SyzygyProbeLimitRange.max() << '\n';
 			std::cout << "option name EvalFile type string default <internal>" << std::endl;
 
-#if SP_EXTERNAL_TUNE
+#if SPJ_EXTERNAL_TUNE
 			for (const auto &[_lowerName, param] : tunableParams())
 			{
 				std::cout << "option name " << param.name << " type spin default " << param.defaultValue
@@ -613,7 +613,7 @@ namespace stormphrax
 						else eval::loadNetwork(valueStr);
 					}
 				}
-#if SP_EXTERNAL_TUNE
+#if SPJ_EXTERNAL_TUNE
 				else if (auto *param = lookupTunableParam(nameStr))
 				{
 					if (!valueEmpty
@@ -805,7 +805,7 @@ namespace stormphrax
 #endif
 	}
 
-#if SP_EXTERNAL_TUNE
+#if SPJ_EXTERNAL_TUNE
 	namespace tunable
 	{
 		auto addTunableParam(const std::string &name, i32 value,
@@ -858,7 +858,7 @@ namespace stormphrax
 			return str.str();
 		}
 
-#if SP_EXTERNAL_TUNE
+#if SPJ_EXTERNAL_TUNE
 		namespace
 		{
 			auto printParams(std::span<const std::string> params,
@@ -950,7 +950,7 @@ namespace stormphrax
 
 			printParams(params, printParam);
 		}
-#endif // SP_EXTERNAL_TUNE
+#endif // SPJ_EXTERNAL_TUNE
 
 #ifndef NDEBUG
 		auto moveAndTypeToString(Move move) -> std::string

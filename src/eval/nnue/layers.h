@@ -1,19 +1,19 @@
 /*
- * Stormphrax, a UCI chess engine
+ * Stormphranj, a UCI shatranj engine
  * Copyright (C) 2024 Ciekce
  *
- * Stormphrax is free software: you can redistribute it and/or modify
+ * Stormphranj is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Stormphrax is distributed in the hope that it will be useful,
+ * Stormphranj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Stormphrax. If not, see <https://www.gnu.org/licenses/>.
+ * along with Stormphranj. If not, see <https://www.gnu.org/licenses/>.
  */
 
 #pragma once
@@ -30,7 +30,7 @@
 #include "../../util/simd.h"
 #include "io.h"
 
-namespace stormphrax::eval::nnue
+namespace stormphranj::eval::nnue
 {
 	template <typename Input, typename Param, activation::Activation Activation,
 		u32 Inputs, u32 Outputs, output::OutputBucketing OutputBucketing>
@@ -57,8 +57,8 @@ namespace stormphrax::eval::nnue
 		static_assert(sizeof(ParamType) * WeightCount >= util::simd::Alignment
 			&& (sizeof(ParamType) * WeightCount) % util::simd::Alignment == 0);
 
-		SP_SIMD_ALIGNAS std::array<ParamType, OutputBucketCount * WeightCount> weights;
-		SP_SIMD_ALIGNAS std::array<ParamType, OutputBucketCount *   BiasCount> biases;
+		SPJ_SIMD_ALIGNAS std::array<ParamType, OutputBucketCount * WeightCount> weights;
+		SPJ_SIMD_ALIGNAS std::array<ParamType, OutputBucketCount *   BiasCount> biases;
 
 		inline auto readFrom(IParamStream &stream) -> bool
 		{

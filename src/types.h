@@ -1,19 +1,19 @@
 /*
- * Stormphrax, a UCI chess engine
+ * Stormphranj, a UCI shatranj engine
  * Copyright (C) 2024 Ciekce
  *
- * Stormphrax is free software: you can redistribute it and/or modify
+ * Stormphranj is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Stormphrax is distributed in the hope that it will be useful,
+ * Stormphranj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Stormphrax. If not, see <https://www.gnu.org/licenses/>.
+ * along with Stormphranj. If not, see <https://www.gnu.org/licenses/>.
  */
 
 #pragma once
@@ -21,7 +21,7 @@
 #include <cstdint>
 #include <cstddef>
 
-namespace stormphrax
+namespace stormphranj
 {
 	using u8 = std::uint8_t;
 	using u16 = std::uint16_t;
@@ -44,11 +44,11 @@ namespace stormphrax
 #define I64(V) INT64_C(V)
 #define U64(V) UINT64_C(V)
 
-#define SP_STRINGIFY_(S) #S
-#define SP_STRINGIFY(S) SP_STRINGIFY_(S)
+#define SPJ_STRINGIFY_(S) #S
+#define SPJ_STRINGIFY(S) SPJ_STRINGIFY_(S)
 
 #ifndef NDEBUG
-#define SP_ALWAYS_INLINE_NDEBUG
+#define SPJ_ALWAYS_INLINE_NDEBUG
 #else
-#define SP_ALWAYS_INLINE_NDEBUG __attribute__((always_inline))
+#define SPJ_ALWAYS_INLINE_NDEBUG __attribute__((always_inline))
 #endif
