@@ -26,10 +26,26 @@
 #include "../position/position.h"
 #include "../core.h"
 
+#include "../see.h"
+
 namespace stormphranj::eval
 {
 	// black, white
 	using Contempt = std::array<Score, 2>;
+
+	inline auto materialBalance(const Position &pos)
+	{
+		const auto material = [&](Color c)
+		{
+			return pos.bbs(). pawns(c).popcount() * see::values::Pawn
+				+ pos.bbs(). alfils(c).popcount() * see::values::Alfil
+				+ pos.bbs(). ferzes(c).popcount() * see::values::Ferz
+				+ pos.bbs().knights(c).popcount() * see::values::Knight
+				+ pos.bbs().  rooks(c).popcount() * see::values::Rook;
+		};
+
+		return (material(pos.toMove()) - material(pos.opponent())) * 2;
+	}
 
 	inline auto scaleEval(const Position &pos, i32 eval)
 	{
@@ -47,16 +63,19 @@ namespace stormphranj::eval
 	}
 
 	template <bool Scale = true>
-	inline auto staticEval(const Position &pos, const NnueState &nnueState, const Contempt &contempt = {})
+	inline auto staticEval(const Position &pos,
+		[[maybe_unused]] const NnueState &nnueState, const Contempt &contempt = {})
 	{
-		const auto nnueEval = nnueState.evaluate(pos.bbs(), pos.toMove());
-		return adjustEval<Scale>(pos, contempt, nnueEval);
+	//	const auto nnueEval = nnueState.evaluate(pos.bbs(), pos.toMove());
+		const auto material = materialBalance(pos);
+		return adjustEval<Scale>(pos, contempt, material);
 	}
 
 	template <bool Scale = true>
 	inline auto staticEvalOnce(const Position &pos, const Contempt &contempt = {})
 	{
-		const auto nnueEval = NnueState::evaluateOnce(pos.bbs(), pos.blackKing(), pos.whiteKing(), pos.toMove());
-		return adjustEval<Scale>(pos, contempt, nnueEval);
+	//	const auto nnueEval = NnueState::evaluateOnce(pos.bbs(), pos.blackKing(), pos.whiteKing(), pos.toMove());
+		const auto material = materialBalance(pos);
+		return adjustEval<Scale>(pos, contempt, material);
 	}
 }
