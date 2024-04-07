@@ -2,7 +2,7 @@
 # BUILD WITH CMAKE PER THE INSTRUCTIONS IN THE README
 
 VERSION := $(file < version.txt)
-EVALFILE = src/eval/net002.nnue
+EVALFILE = src/eval/net003.nnue
 
 ifndef EXE
     EXE = stormphranj-$(VERSION)
