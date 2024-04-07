@@ -370,7 +370,7 @@ namespace stormphranj
 			const auto halfmove = currState().halfmove;
 
 			// TODO handle mate
-			if (halfmove >= 100)
+			if (halfmove >= 140)
 				return true;
 
 			const auto currKey = currState().key;
