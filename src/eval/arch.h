@@ -28,12 +28,12 @@
 
 namespace stormphranj::eval
 {
-	// current arch: (768->128)x2->1, ClippedReLU
+	// current arch: (768->128)x2->1, SquaredClippedReLU
 
 	constexpr i32 L1Q = 255;
 	constexpr i32 OutputQ = 64;
 
-	using L1Activation = nnue::activation::ClippedReLU<i16, i32, L1Q>;
+	using L1Activation = nnue::activation::SquaredClippedReLU<i16, i32, L1Q>;
 
 	constexpr u32 InputSize = 768;
 	constexpr u32 Layer1Size = 128;
