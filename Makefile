@@ -29,7 +29,7 @@ CXXFLAGS_AVX2_BMI2 := -DSPJ_AVX2_BMI2 -DSPJ_FAST_PEXT -march=haswell -mtune=hasw
 CXXFLAGS_AVX2 := -DSPJ_AVX2 -march=bdver4 -mno-tbm -mno-sse4a -mno-bmi2 -mtune=znver2
 CXXFLAGS_SSE41_POPCNT := -DSPJ_SSE41_POPCNT -march=nehalem -mtune=sandybridge
 
-LDFLAGS := -pthread
+LDFLAGS := 
 
 COMPILER_VERSION := $(shell $(CXX) --version)
 
