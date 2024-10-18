@@ -459,7 +459,16 @@ namespace stormphranj
 		{
 			return m_fullmove * 2 - (m_blackToMove ? 0 : 1) - 1;
 		}
-
+		[[nodiscard]] inline auto totalMaterial() const -> u32
+		{
+			const auto &bbs = this->bbs();
+			const auto numpawns = bbs.pawns().popcount();
+			const auto numalfils = bbs.alfils().popcount();
+			const auto numferzes = bbs.ferzes().popcount();
+			const auto numknights = bbs.knights().popcount();
+			const auto numrooks = bbs.rooks().popcount();
+			return numpawns + numalfils + 2 * numferzes + 4 * numknights + 6 * numrooks;
+		}
 		auto operator=(const Position &) -> Position & = default;
 		auto operator=(Position &&) -> Position & = default;
 

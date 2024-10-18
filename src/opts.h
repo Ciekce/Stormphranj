@@ -32,7 +32,7 @@ namespace stormphranj
 		{
 			bool showWdl{true};
 
-			i32 contempt{wdl::unnormalizeScoreMove32(DefaultNormalizedContempt)};
+			i32 contempt{wdl::unnormalizeScoreMaterial32(DefaultNormalizedContempt)};
 		};
 
 		auto mutableOpts() -> GlobalOptions &;

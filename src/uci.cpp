@@ -490,7 +490,7 @@ namespace stormphranj
 					if (!valueEmpty)
 					{
 						if (const auto newContempt = util::tryParseI32(valueStr))
-							opts::mutableOpts().contempt = wdl::unnormalizeScoreMove32(
+							opts::mutableOpts().contempt = wdl::unnormalizeScoreMaterial32(
 								ContemptRange.clamp(*newContempt));
 					}
 				}
@@ -569,7 +569,7 @@ namespace stormphranj
 
 			std::cout << std::endl;
 
-			const auto staticEval = wdl::normalizeScore(eval::staticEvalOnce(m_pos), m_pos.plyFromStartpos());
+			const auto staticEval = wdl::normalizeScore(eval::staticEvalOnce(m_pos), m_pos.totalMaterial());
 
 			std::cout << "Static eval: ";
 			printScore(std::cout, m_pos.toMove() == Color::Black ? -staticEval : staticEval);
@@ -578,7 +578,7 @@ namespace stormphranj
 
 		auto UciHandler::handleEval() -> void
 		{
-			const auto score = wdl::normalizeScore(eval::staticEvalOnce(m_pos), m_pos.plyFromStartpos());
+			const auto score = wdl::normalizeScore(eval::staticEvalOnce(m_pos), m_pos.totalMaterial());
 			printScore(std::cout, score);
 			std::cout << std::endl;
 		}

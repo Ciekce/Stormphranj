@@ -135,7 +135,7 @@ namespace stormphranj::search
 		m_ttable.age();
 
 		const auto whitePovScore = thread.pos.toMove() == Color::Black ? -score : score;
-		return {whitePovScore, wdl::normalizeScoreMove32(whitePovScore)};
+		return {whitePovScore, wdl::normalizeScoreMaterial32(whitePovScore)};
 	}
 
 	auto Searcher::runBench(BenchData &data, const Position &pos, i32 depth) -> void
@@ -1021,7 +1021,7 @@ namespace stormphranj::search
 
 		score = std::clamp(score, m_minRootScore, m_maxRootScore);
 
-		const auto plyFromStartpos = mainThread.pos.plyFromStartpos();
+		const auto totalMaterial = mainThread.pos.totalMaterial();
 
 		// mates
 		if (std::abs(score) >= ScoreMaxMate)
@@ -1033,7 +1033,7 @@ namespace stormphranj::search
 		else
 		{
 			// adjust score to 100cp == 50% win probability
-			const auto normScore = wdl::normalizeScore(score, plyFromStartpos);
+			const auto normScore = wdl::normalizeScore(score, totalMaterial);
 			std::cout << "cp " << normScore;
 		}
 
@@ -1051,7 +1051,7 @@ namespace stormphranj::search
 				std::cout << " wdl 0 0 1000";
 			else
 			{
-				const auto [wdlWin, wdlLoss] = wdl::wdlModel(score, plyFromStartpos);
+				const auto [wdlWin, wdlLoss] = wdl::wdlModel(score, totalMaterial);
 				const auto wdlDraw = 1000 - wdlWin - wdlLoss;
 
 				std::cout << " wdl " << wdlWin << " " << wdlDraw << " " << wdlLoss;

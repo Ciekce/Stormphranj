@@ -29,7 +29,7 @@ namespace stormphranj::wdl
 {
 	// Only used for unnormalisation and datagen, as a kind of best effort attempt
 	// Normalisation goes through the wdl model so as to be independent of ply
-	constexpr Score Move32NormalizationK = 250;
+	constexpr Score Material32NormalizationK = 152;
 
 	[[nodiscard]] auto wdlParams(u32 ply) -> std::pair<f64, f64>;
 	[[nodiscard]] auto wdlModel(Score povScore, u32 ply) -> std::pair<i32, i32>; // [win, loss]
@@ -45,15 +45,15 @@ namespace stormphranj::wdl
 	}
 
 	// for datagen only - only gives a 50% winrate at move 32
-	inline auto normalizeScoreMove32(Score score)
+	inline auto normalizeScoreMaterial32(Score score)
 	{
 		return score == 0 || std::abs(score) > ScoreWin
-			? score : score * 100 / Move32NormalizationK;
+			? score : score * 100 / Material32NormalizationK;
 	}
 
-	inline auto unnormalizeScoreMove32(Score score)
+	inline auto unnormalizeScoreMaterial32(Score score)
 	{
 		return score == 0 || std::abs(score) > ScoreWin
-			? score : score * Move32NormalizationK / 100;
+			? score : score * Material32NormalizationK / 100;
 	}
 }
