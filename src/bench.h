@@ -25,9 +25,9 @@
 namespace stormphranj::bench
 {
 #ifdef SPJ_PGO_PROFILE
-	constexpr i32 DefaultBenchDepth = 12;
+	constexpr i32 DefaultBenchDepth = 14;
 #else
-	constexpr i32 DefaultBenchDepth = 15;
+	constexpr i32 DefaultBenchDepth = 20;
 #endif
 
 	auto run(search::Searcher &searcher, i32 depth = DefaultBenchDepth) -> void;
