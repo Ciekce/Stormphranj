@@ -1,21 +1,3 @@
-/*
- * Stormphranj, a UCI shatranj engine
- * Copyright (C) 2024 Ciekce
- *
- * Stormphranj is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Stormphranj is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Stormphranj. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  * @file incbin.h
  * @author Dale Weiler
@@ -142,7 +124,7 @@
 /**
  * @brief Optionally override the linker section into which size and data is
  * emitted.
- *
+ * 
  * @warning If you use this facility, you might have to deal with
  * platform-specific linker output section naming on your own.
  */
@@ -169,7 +151,7 @@
  *
  * @warning If you use this facility, you might have to deal with
  * platform-specific linker output section naming on your own.
- *
+ * 
  * @note This is useful for Harvard architectures where program memory cannot
  * be directly read from the program without special instructions. With this you
  * can chose to put the size variable in RAM rather than ROM.
@@ -326,11 +308,11 @@
  * // extern const unsigned char *const <prefix>Foo<end>;
  * // extern const unsigned int <prefix>Foo<size>;
  * @endcode
- *
+ * 
  * You may specify a custom optional data type as well as the first argument.
  * @code
  * INCBIN_EXTERN(custom_type, Foo);
- *
+ * 
  * // Now you have the following symbols:
  * // extern const custom_type <prefix>Foo<data>[];
  * // extern const custom_type *const <prefix>Foo<end>;
@@ -399,7 +381,7 @@
  * // const unsigned char *const <prefix>Icon<end>;
  * // const unsigned int <prefix>Icon<size>;
  * @endcode
- *
+ * 
  * You may specify a custom optional data type as well as the first argument.
  * These macros are specialized by arity.
  * @code
@@ -457,7 +439,7 @@
 
 /**
  * @brief Include a textual file into the current translation unit.
- *
+ * 
  * This behaves the same as INCBIN except it produces char compatible arrays
  * and implicitly adds a null-terminator byte, thus the size of data included
  * by this is one byte larger than that of INCBIN.
