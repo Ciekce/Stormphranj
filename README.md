@@ -11,7 +11,9 @@
 
 </div>
 
-a work-in-progress UCI [shatranj] engine based on [Stormphrax], with NNUE evaluation trained from zero knowledge starting with random weights
+a UCI [shatranj] engine based on [Stormphrax], with NNUE evaluation trained from zero knowledge starting with random weights
+
+### Superseded by [oranj]
 
 ## Strength
 ??
@@ -99,6 +101,7 @@ By default, the makefile builds binaries with profile-guided optimisation (PGO).
 [shatranj]: https://en.wikipedia.org/wiki/Shatranj
 
 [stormphrax]: https://github.com/Ciekce/Stormphrax
+[oranj]: https://github.com/Ciekce/oranj
 
 [fathom]: https://github.com/jdart1/Fathom
 [incbin]: https://github.com/graphitemaster/incbin
